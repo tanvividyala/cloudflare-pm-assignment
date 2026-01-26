@@ -16,28 +16,35 @@
 	},
 	"observability": {
 		"enabled": true
+	},
+
+	/**
+	 * D1 Database - stores feedback metadata
+	 * Create with: wrangler d1 create feedback-db
+	 */
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "feedback-db",
+			"database_id": "a8000d29-983e-49c5-a48a-efc3c73adee2"
+		}
+	],
+
+	/**
+	 * Vectorize - stores feedback embeddings for semantic search
+	 * Create with: wrangler vectorize create feedback-vectors --dimensions=768 --metric=cosine
+	 */
+	"vectorize": [
+		{
+			"binding": "VECTORIZE",
+			"index_name": "feedback-vectors"
+		}
+	],
+
+	/**
+	 * Workers AI - for embeddings (semantic search)
+	 */
+	"ai": {
+		"binding": "AI"
 	}
-	/**
-	 * Smart Placement
-	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
-	 */
-	// "placement": {  "mode": "smart" }
-	/**
-	 * Bindings
-	 * Bindings allow your Worker to interact with resources on the Cloudflare Developer Platform, including
-	 * databases, object storage, AI inference, real-time communication and more.
-	 * https://developers.cloudflare.com/workers/runtime-apis/bindings/
-	 */
-	/**
-	 * Environment Variables
-	 * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
-	 * Note: Use secrets to store sensitive data.
-	 * https://developers.cloudflare.com/workers/configuration/secrets/
-	 */
-	// "vars": {  "MY_VARIABLE": "production_value" }
-	/**
-	 * Service Bindings (communicate between multiple Workers)
-	 * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings
-	 */
-	// "services": [  {   "binding": "MY_SERVICE",   "service": "my-service"  } ]
 }

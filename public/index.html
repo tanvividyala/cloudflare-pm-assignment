@@ -1,32 +1,623 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Hello, World!</title>
-	</head>
-	<body>
-		<h1 id="heading"></h1>
-		<p>This page comes from a static asset stored at `public/index.html` as configured in `wrangler.jsonc`.</p>
-		<button id="button" type="button">Fetch a random UUID</button>
-		<output id="random" for="button"></output>
-		<script>
-			fetch('/message')
-				.then((resp) => resp.text())
-				.then((text) => {
-					const h1 = document.getElementById('heading');
-					h1.textContent = text;
-				});
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Aggregator - PM Tool</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-			const button = document.getElementById("button");
-			button.addEventListener("click", () => {
-				fetch('/random')
-					.then((resp) => resp.text())
-					.then((text) => {
-						const random = document.getElementById('random');
-						random.textContent = text;
-					});
-			});
-		</script>
-	</body>
+        :root {
+            --cf-orange: #f6821f;
+            --cf-dark: #1d1d1d;
+            --cf-gray-800: #333;
+            --cf-gray-600: #666;
+            --cf-gray-400: #999;
+            --cf-gray-200: #e5e5e5;
+            --cf-gray-100: #f5f5f5;
+            --cf-white: #fff;
+            --cf-green: #22c55e;
+            --cf-red: #ef4444;
+            --cf-yellow: #eab308;
+            --cf-blue: #3b82f6;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--cf-gray-100);
+            color: var(--cf-dark);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 220px;
+            background: var(--cf-dark);
+            color: var(--cf-white);
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--cf-gray-800);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo {
+            width: 28px;
+            height: 28px;
+            background: var(--cf-orange);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .nav { padding: 12px 0; }
+
+        .nav-section {
+            padding: 8px 20px;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--cf-gray-400);
+            margin-top: 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            color: #ccc;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .nav-item:hover { background: var(--cf-gray-800); color: #fff; }
+        .nav-item.active { background: var(--cf-gray-800); color: var(--cf-orange); border-right: 3px solid var(--cf-orange); }
+
+        .nav-count {
+            margin-left: auto;
+            background: var(--cf-gray-800);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+
+        .main { flex: 1; margin-left: 220px; }
+
+        .header {
+            background: var(--cf-white);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--cf-gray-200);
+        }
+
+        .header h1 { font-size: 18px; font-weight: 600; }
+
+        .content { padding: 24px; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--cf-white);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-label { font-size: 12px; color: var(--cf-gray-600); text-transform: uppercase; margin-bottom: 4px; }
+        .stat-value { font-size: 28px; font-weight: 600; }
+        .stat-pct { font-size: 12px; margin-top: 4px; }
+        .stat-pct.positive { color: var(--cf-green); }
+        .stat-pct.negative { color: var(--cf-red); }
+        .stat-pct.neutral { color: var(--cf-gray-600); }
+
+        .grid-2 { display: grid; grid-template-columns: 3fr 2fr; gap: 16px; margin-bottom: 16px; }
+        .grid-2-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        .card {
+            background: var(--cf-white);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--cf-gray-200);
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-header .icon { font-size: 16px; }
+
+        .card-body { padding: 16px 20px; }
+
+        .feedback-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--cf-gray-100);
+        }
+        .feedback-item:last-child { border-bottom: none; }
+
+        .feedback-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .tag {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .tag-source { background: var(--cf-gray-100); color: var(--cf-gray-600); }
+        .tag-positive { background: #dcfce7; color: #166534; }
+        .tag-negative { background: #fee2e2; color: #991b1b; }
+        .tag-neutral { background: #f3f4f6; color: #4b5563; }
+
+        .feedback-text { font-size: 14px; line-height: 1.5; color: var(--cf-dark); }
+        .feedback-time { font-size: 12px; color: var(--cf-gray-400); margin-top: 6px; }
+        .feedback-category { font-size: 11px; color: var(--cf-gray-400); margin-left: auto; }
+
+        .sentiment-bar {
+            display: flex;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            background: var(--cf-gray-200);
+        }
+
+        .bar-positive { background: var(--cf-green); }
+        .bar-neutral { background: var(--cf-yellow); }
+        .bar-negative { background: var(--cf-red); }
+
+        .legend { display: flex; gap: 16px; margin-top: 12px; font-size: 12px; }
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+        /* AI Insights */
+        .insights-summary {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--cf-dark);
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 6px;
+            border-left: 4px solid var(--cf-orange);
+        }
+
+        .insights-loading {
+            color: var(--cf-gray-400);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Word Cloud */
+        .word-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            min-height: 100px;
+        }
+
+        .word-tag {
+            padding: 4px 10px;
+            border-radius: 4px;
+            background: var(--cf-gray-100);
+            color: var(--cf-gray-800);
+            font-size: 12px;
+            transition: transform 0.2s;
+        }
+
+        .word-tag:hover { transform: scale(1.1); }
+        .word-tag.size-1 { font-size: 11px; opacity: 0.7; }
+        .word-tag.size-2 { font-size: 13px; opacity: 0.8; }
+        .word-tag.size-3 { font-size: 15px; font-weight: 500; }
+        .word-tag.size-4 { font-size: 17px; font-weight: 600; background: var(--cf-orange); color: white; }
+        .word-tag.size-5 { font-size: 19px; font-weight: 700; background: var(--cf-dark); color: white; }
+
+        /* Source breakdown */
+        .source-list { display: flex; flex-direction: column; gap: 8px; }
+        .source-item { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+        .source-bar-container { flex: 1; height: 8px; background: var(--cf-gray-100); border-radius: 4px; overflow: hidden; }
+        .source-bar { height: 100%; background: var(--cf-blue); border-radius: 4px; }
+        .source-count { font-size: 12px; color: var(--cf-gray-600); min-width: 24px; text-align: right; }
+
+        .search-box { display: flex; gap: 8px; margin-bottom: 16px; }
+
+        .search-input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid var(--cf-gray-200);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .search-input:focus { outline: none; border-color: var(--cf-orange); }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            background: var(--cf-orange);
+            color: white;
+        }
+
+        .btn:hover { background: #e07318; }
+
+        .empty { text-align: center; padding: 40px; color: var(--cf-gray-400); }
+        .hidden { display: none; }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--cf-gray-200);
+            border-top-color: var(--cf-orange);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @media (max-width: 1100px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .grid-2, .grid-2-equal { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">F</div>
+            <span>Feedback Hub</span>
+        </div>
+        <nav class="nav">
+            <div class="nav-section">Overview</div>
+            <div class="nav-item active" data-view="dashboard">Dashboard</div>
+            <div class="nav-item" data-view="all">All Feedback <span class="nav-count" id="nav-total">0</span></div>
+
+            <div class="nav-section">Categories</div>
+            <div class="nav-item" data-filter="bug">Bug Reports <span class="nav-count" id="nav-bug">0</span></div>
+            <div class="nav-item" data-filter="feature_request">Feature Requests <span class="nav-count" id="nav-feature_request">0</span></div>
+            <div class="nav-item" data-filter="praise">Praise <span class="nav-count" id="nav-praise">0</span></div>
+            <div class="nav-item" data-filter="complaint">Complaints <span class="nav-count" id="nav-complaint">0</span></div>
+            <div class="nav-item" data-filter="question">Questions <span class="nav-count" id="nav-question">0</span></div>
+
+            <div class="nav-section">Tools</div>
+            <div class="nav-item" data-view="search">Semantic Search</div>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <header class="header">
+            <h1 id="page-title">Dashboard</h1>
+        </header>
+
+        <div class="content">
+            <!-- Dashboard View -->
+            <div id="view-dashboard">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Feedback</div>
+                        <div class="stat-value" id="stat-total">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Positive</div>
+                        <div class="stat-value" id="stat-positive">0</div>
+                        <div class="stat-pct positive" id="pct-positive"></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Neutral</div>
+                        <div class="stat-value" id="stat-neutral">0</div>
+                        <div class="stat-pct neutral" id="pct-neutral"></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Negative</div>
+                        <div class="stat-value" id="stat-negative">0</div>
+                        <div class="stat-pct negative" id="pct-negative"></div>
+                    </div>
+                </div>
+
+                <!-- Key Insights Row -->
+                <div class="card" style="margin-bottom: 16px;">
+                    <div class="card-header"><span class="icon">&#9888;</span> Key Issues Requiring Attention</div>
+                    <div class="card-body" id="insights-container">
+                        <div class="insights-loading"><div class="spinner"></div> Analyzing feedback with AI...</div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <!-- Recent Feedback -->
+                    <div class="card">
+                        <div class="card-header">Recent Feedback</div>
+                        <div class="card-body" id="recent-list"></div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <!-- Sentiment -->
+                        <div class="card">
+                            <div class="card-header">Sentiment Breakdown</div>
+                            <div class="card-body">
+                                <div class="sentiment-bar">
+                                    <div class="bar-positive" id="bar-pos"></div>
+                                    <div class="bar-neutral" id="bar-neu"></div>
+                                    <div class="bar-negative" id="bar-neg"></div>
+                                </div>
+                                <div class="legend">
+                                    <div class="legend-item"><div class="legend-dot" style="background:var(--cf-green)"></div> Positive</div>
+                                    <div class="legend-item"><div class="legend-dot" style="background:var(--cf-yellow)"></div> Neutral</div>
+                                    <div class="legend-item"><div class="legend-dot" style="background:var(--cf-red)"></div> Negative</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Word Cloud -->
+                        <div class="card">
+                            <div class="card-header">Trending Topics</div>
+                            <div class="card-body">
+                                <div class="word-cloud" id="word-cloud">
+                                    <div class="insights-loading"><div class="spinner"></div></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sources -->
+                        <div class="card">
+                            <div class="card-header">Feedback Sources</div>
+                            <div class="card-body">
+                                <div class="source-list" id="source-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Feedback View -->
+            <div id="view-all" class="hidden">
+                <div class="card">
+                    <div class="card-header">All Feedback</div>
+                    <div class="card-body" id="all-list"></div>
+                </div>
+            </div>
+
+            <!-- Search View -->
+            <div id="view-search" class="hidden">
+                <div class="search-box">
+                    <input type="text" class="search-input" id="search-input" placeholder="Search feedback semantically (e.g., 'users having trouble with uploads')">
+                    <button class="btn" id="search-btn">Search</button>
+                </div>
+                <div class="card">
+                    <div class="card-header">Search Results</div>
+                    <div class="card-body" id="search-results">
+                        <div class="empty">Enter a natural language query to find semantically similar feedback using AI</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentView = 'dashboard';
+
+        function renderFeedback(items, container) {
+            if (!items?.length) {
+                container.innerHTML = '<div class="empty">No feedback found</div>';
+                return;
+            }
+            container.innerHTML = items.map(item => `
+                <div class="feedback-item">
+                    <div class="feedback-meta">
+                        <span class="tag tag-source">${item.source}</span>
+                        <span class="tag tag-${item.sentiment}">${item.sentiment}</span>
+                        <span class="feedback-category">${(item.category || '').replace('_', ' ')}</span>
+                    </div>
+                    <div class="feedback-text">${item.content}</div>
+                    <div class="feedback-time">${new Date(item.created_at).toLocaleString()}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderWordCloud(words) {
+            const container = document.getElementById('word-cloud');
+            if (!words?.length) {
+                container.innerHTML = '<div class="empty">No data</div>';
+                return;
+            }
+
+            const maxCount = Math.max(...words.map(w => w.count));
+            container.innerHTML = words.map(w => {
+                const ratio = w.count / maxCount;
+                let size = 1;
+                if (ratio > 0.8) size = 5;
+                else if (ratio > 0.6) size = 4;
+                else if (ratio > 0.4) size = 3;
+                else if (ratio > 0.2) size = 2;
+                return `<span class="word-tag size-${size}">${w.word}</span>`;
+            }).join('');
+        }
+
+        function renderSources(feedback) {
+            const sources = {};
+            feedback.forEach(f => {
+                sources[f.source] = (sources[f.source] || 0) + 1;
+            });
+
+            const total = feedback.length;
+            const container = document.getElementById('source-list');
+            const sourceNames = { survey: 'Survey', email: 'Email', support_ticket: 'Support Tickets', social: 'Social Media' };
+
+            container.innerHTML = Object.entries(sources)
+                .sort((a, b) => b[1] - a[1])
+                .map(([source, count]) => {
+                    const pct = Math.round((count / total) * 100);
+                    return `
+                        <div class="source-item">
+                            <span style="min-width: 100px">${sourceNames[source] || source}</span>
+                            <div class="source-bar-container">
+                                <div class="source-bar" style="width: ${pct}%"></div>
+                            </div>
+                            <span class="source-count">${count}</span>
+                        </div>
+                    `;
+                }).join('');
+        }
+
+        async function loadStats() {
+            const res = await fetch('/api/stats');
+            const data = await res.json();
+
+            document.getElementById('stat-total').textContent = data.total;
+            document.getElementById('stat-positive').textContent = data.sentiment.positive;
+            document.getElementById('stat-neutral').textContent = data.sentiment.neutral;
+            document.getElementById('stat-negative').textContent = data.sentiment.negative;
+            document.getElementById('nav-total').textContent = data.total;
+
+            const total = data.sentiment.positive + data.sentiment.neutral + data.sentiment.negative;
+            if (total > 0) {
+                const pPos = Math.round((data.sentiment.positive / total) * 100);
+                const pNeu = Math.round((data.sentiment.neutral / total) * 100);
+                const pNeg = Math.round((data.sentiment.negative / total) * 100);
+
+                document.getElementById('pct-positive').textContent = pPos + '%';
+                document.getElementById('pct-neutral').textContent = pNeu + '%';
+                document.getElementById('pct-negative').textContent = pNeg + '%';
+
+                document.getElementById('bar-pos').style.width = pPos + '%';
+                document.getElementById('bar-neu').style.width = pNeu + '%';
+                document.getElementById('bar-neg').style.width = pNeg + '%';
+            }
+
+            Object.entries(data.categories || {}).forEach(([cat, count]) => {
+                const el = document.getElementById('nav-' + cat);
+                if (el) el.textContent = count;
+            });
+
+            renderFeedback(data.recent, document.getElementById('recent-list'));
+        }
+
+        async function loadInsights() {
+            try {
+                const res = await fetch('/api/insights');
+                const data = await res.json();
+
+                document.getElementById('insights-container').innerHTML =
+                    `<div class="insights-summary">${data.summary}</div>`;
+
+                renderWordCloud(data.wordCloud);
+            } catch (e) {
+                document.getElementById('insights-container').innerHTML =
+                    '<div class="empty">Could not load AI insights</div>';
+            }
+        }
+
+        async function loadAllFeedbackForSources() {
+            const res = await fetch('/api/feedback?limit=100');
+            const data = await res.json();
+            renderSources(data.feedback);
+        }
+
+        async function loadFeedback(filter) {
+            const url = filter ? `/api/feedback?category=${filter}` : '/api/feedback';
+            const res = await fetch(url);
+            const data = await res.json();
+            renderFeedback(data.feedback, document.getElementById('all-list'));
+        }
+
+        async function search(query) {
+            const container = document.getElementById('search-results');
+            container.innerHTML = '<div class="empty"><div class="spinner" style="display:inline-block;margin-right:8px"></div> Searching...</div>';
+
+            try {
+                const res = await fetch('/api/search', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+                const data = await res.json();
+
+                if (!data.results?.length) {
+                    container.innerHTML = '<div class="empty">No matching feedback found</div>';
+                    return;
+                }
+
+                container.innerHTML = data.results.map(r => `
+                    <div class="feedback-item">
+                        <div class="feedback-meta">
+                            <span class="tag tag-source">${r.feedback?.source || ''}</span>
+                            <span class="tag tag-${r.feedback?.sentiment}">${r.feedback?.sentiment || ''}</span>
+                            <span class="feedback-category">${Math.round(r.score * 100)}% match</span>
+                        </div>
+                        <div class="feedback-text">${r.feedback?.content || ''}</div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                container.innerHTML = '<div class="empty">Search failed</div>';
+            }
+        }
+
+        function showView(view, filter = null) {
+            currentView = view;
+            document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+            if (filter) {
+                document.getElementById('view-all').classList.remove('hidden');
+                document.querySelector(`[data-filter="${filter}"]`)?.classList.add('active');
+                document.getElementById('page-title').textContent = filter.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                loadFeedback(filter);
+            } else {
+                document.getElementById('view-' + view).classList.remove('hidden');
+                document.querySelector(`[data-view="${view}"]`)?.classList.add('active');
+                document.getElementById('page-title').textContent = view === 'search' ? 'Semantic Search' : view === 'all' ? 'All Feedback' : 'Dashboard';
+                if (view === 'all') loadFeedback();
+            }
+        }
+
+        document.querySelectorAll('.nav-item[data-view]').forEach(el => {
+            el.addEventListener('click', () => showView(el.dataset.view));
+        });
+
+        document.querySelectorAll('.nav-item[data-filter]').forEach(el => {
+            el.addEventListener('click', () => showView('all', el.dataset.filter));
+        });
+
+        document.getElementById('search-btn').addEventListener('click', () => {
+            const query = document.getElementById('search-input').value.trim();
+            if (query) search(query);
+        });
+
+        document.getElementById('search-input').addEventListener('keypress', e => {
+            if (e.key === 'Enter') document.getElementById('search-btn').click();
+        });
+
+        // Initialize
+        loadStats();
+        loadInsights();
+        loadAllFeedbackForSources();
+    </script>
+</body>
 </html>

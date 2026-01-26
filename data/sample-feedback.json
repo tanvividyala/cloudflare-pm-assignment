@@ -1,0 +1,202 @@
+[
+  {
+    "source": "survey",
+    "content": "Absolutely love the new dashboard redesign! It's so much easier to navigate now and the loading times are incredibly fast. Great job team!"
+  },
+  {
+    "source": "email",
+    "content": "The app keeps crashing every time I try to upload a file larger than 10MB. This is really frustrating as I need to upload reports daily for my work."
+  },
+  {
+    "source": "support_ticket",
+    "content": "Is there any way to export my data to CSV format? I couldn't find this option anywhere in the settings."
+  },
+  {
+    "source": "social",
+    "content": "Just switched from a competitor and WOW the difference is night and day. Everything just works smoothly. Highly recommend!"
+  },
+  {
+    "source": "survey",
+    "content": "The mobile app is basically unusable. Buttons are too small, text is cut off, and it drains my battery like crazy. Please fix this."
+  },
+  {
+    "source": "email",
+    "content": "I've been a customer for 3 years and the service has been consistently excellent. The support team always responds within hours."
+  },
+  {
+    "source": "support_ticket",
+    "content": "Getting error code 500 when trying to access my account settings. Tried different browsers but same issue persists."
+  },
+  {
+    "source": "social",
+    "content": "The new pricing is outrageous. You've essentially doubled the cost while removing features. Very disappointed in this direction."
+  },
+  {
+    "source": "survey",
+    "content": "It would be great if you could add dark mode. I work late nights and the bright white interface is hard on my eyes."
+  },
+  {
+    "source": "email",
+    "content": "Thank you for the quick resolution to my billing issue. Sarah from support was incredibly helpful and professional."
+  },
+  {
+    "source": "support_ticket",
+    "content": "The two-factor authentication isn't working. I'm not receiving the SMS codes even though my phone number is correct."
+  },
+  {
+    "source": "social",
+    "content": "Can you please add integration with Slack? Would make our team workflow so much better."
+  },
+  {
+    "source": "survey",
+    "content": "The product does what it says. Nothing special but nothing wrong either. Gets the job done."
+  },
+  {
+    "source": "email",
+    "content": "I accidentally deleted important files and there's no way to recover them. You really need a trash/recycle bin feature!"
+  },
+  {
+    "source": "support_ticket",
+    "content": "Why did you remove the bulk edit feature? This was essential for my workflow and now I have to edit items one by one."
+  },
+  {
+    "source": "social",
+    "content": "Best customer service I've ever experienced! They went above and beyond to help me migrate my data."
+  },
+  {
+    "source": "survey",
+    "content": "The search functionality is broken. It returns completely irrelevant results and sometimes doesn't find items I know exist."
+  },
+  {
+    "source": "email",
+    "content": "Would love to see keyboard shortcuts added. Power users like me would really benefit from this."
+  },
+  {
+    "source": "support_ticket",
+    "content": "The API rate limits are too restrictive for our use case. Is there an enterprise plan with higher limits?"
+  },
+  {
+    "source": "social",
+    "content": "Just discovered your product and I'm blown away by how intuitive it is. Didn't even need to read the docs!"
+  },
+  {
+    "source": "survey",
+    "content": "Loading times have gotten progressively worse over the past few months. What used to take 2 seconds now takes 10+."
+  },
+  {
+    "source": "email",
+    "content": "The onboarding tutorial was really helpful. Made it easy to get started without feeling overwhelmed."
+  },
+  {
+    "source": "support_ticket",
+    "content": "I'm seeing duplicate entries appearing in my reports. This is causing major issues with our accounting."
+  },
+  {
+    "source": "social",
+    "content": "Please add support for more languages. Many of my team members don't speak English fluently."
+  },
+  {
+    "source": "survey",
+    "content": "The collaboration features are fantastic! Being able to work on documents simultaneously with my team has transformed how we work."
+  },
+  {
+    "source": "email",
+    "content": "Why is there no undo button?? I just made a change that I can't reverse and lost hours of work."
+  },
+  {
+    "source": "support_ticket",
+    "content": "The notifications are way too aggressive. I'm getting emails for every tiny thing even though I tried adjusting settings."
+  },
+  {
+    "source": "social",
+    "content": "Renewed my subscription for another year. Solid product that keeps getting better with each update."
+  },
+  {
+    "source": "survey",
+    "content": "It's fine I guess. Does what I need but the interface feels dated compared to alternatives."
+  },
+  {
+    "source": "email",
+    "content": "The calendar sync feature is amazing! Finally all my schedules are in one place."
+  },
+  {
+    "source": "support_ticket",
+    "content": "Images are not loading in the preview. Just showing broken image icons everywhere."
+  },
+  {
+    "source": "social",
+    "content": "Would be perfect if you added a native Windows app instead of just the web version."
+  },
+  {
+    "source": "survey",
+    "content": "Your product literally saved my business. The automation features have freed up so much of my time."
+  },
+  {
+    "source": "email",
+    "content": "Very unhappy with the recent update. You changed the entire layout and now I can't find anything."
+  },
+  {
+    "source": "support_ticket",
+    "content": "How do I cancel my subscription? I've been looking for 20 minutes and can't find the option anywhere."
+  },
+  {
+    "source": "social",
+    "content": "The free tier is surprisingly generous. Testing it out before committing to paid and impressed so far."
+  },
+  {
+    "source": "survey",
+    "content": "Please fix the memory leaks. After a few hours of use, the browser tab is consuming 2GB+ of RAM."
+  },
+  {
+    "source": "email",
+    "content": "Just wanted to say the redesigned logo looks great! Small thing but shows you care about details."
+  },
+  {
+    "source": "support_ticket",
+    "content": "The export feature keeps timing out for large datasets. Need this fixed urgently for a client deadline."
+  },
+  {
+    "source": "social",
+    "content": "Integration with Google Drive would be a game changer. Please consider adding this!"
+  },
+  {
+    "source": "survey",
+    "content": "Rock solid reliability. Haven't experienced a single outage in over a year of daily use."
+  },
+  {
+    "source": "email",
+    "content": "The permission system is confusing. I can't figure out how to give view-only access to external partners."
+  },
+  {
+    "source": "support_ticket",
+    "content": "Audio in video calls is choppy and keeps cutting out. Makes meetings very frustrating."
+  },
+  {
+    "source": "social",
+    "content": "Switched my whole team over from [competitor]. Best decision we made this year!"
+  },
+  {
+    "source": "survey",
+    "content": "Average product. Not bad but not great either. Might look at alternatives when our contract is up."
+  },
+  {
+    "source": "email",
+    "content": "The analytics dashboard is incredibly insightful. Love being able to track everything in real-time."
+  },
+  {
+    "source": "support_ticket",
+    "content": "Password reset emails are taking over 30 minutes to arrive. Had to reset twice and wait forever both times."
+  },
+  {
+    "source": "social",
+    "content": "Can we please get an offline mode? I travel a lot and losing connectivity kills my productivity."
+  },
+  {
+    "source": "survey",
+    "content": "Documentation is excellent. Every question I had was answered in the help center."
+  },
+  {
+    "source": "email",
+    "content": "Terrible experience trying to get a refund. Took 3 weeks and multiple emails to resolve."
+  }
+]

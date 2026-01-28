@@ -14,8 +14,6 @@ This prototype explores how Cloudflare’s developer platform can be used to sum
 
 Instead of reading dozens of messages manually, a PM can open a dashboard and instantly understand what is happening!
 
----
-
 ## The Problem
 
 Product Managers rely heavily on user feedback to guide roadmap decisions. However:
@@ -26,8 +24,6 @@ Product Managers rely heavily on user feedback to guide roadmap decisions. Howev
 * Traditional BI tools require pre structured data and manual tagging
 
 As a result, PMs spend time reading messages instead of making decisions.
-
----
 
 ## What This Prototype Does
 
@@ -55,9 +51,7 @@ The processed results are displayed in a dashboard showing:
 * Critical issues requiring attention
 * Supporting user quotes in context
 
-A PM can also perform natural language search to find semantically similar feedback even when wording is different.
-
----
+A user can also perform natural language search to find semantically similar feedback even when wording is different.
 
 ## How a PM Would Use This
 
@@ -70,10 +64,6 @@ A PM opens the dashboard and can immediately:
 * Pull real user quotes to support roadmap decisions
 * Communicate clearly with engineering using evidence
 
-This turns raw feedback into prioritized action.
-
----
-
 ## Architecture Overview
 
 This prototype uses several Cloudflare products working together.
@@ -84,8 +74,6 @@ This prototype uses several Cloudflare products working together.
 | **D1**         | Needed a database that integrates natively with Workers | Stores raw feedback and AI analyzed results                                     |
 | **Workers AI** | Needed automatic classification without manual labeling | Runs Llama 3.1 for sentiment and category classification and BGE for embeddings |
 | **Vectorize**  | Needed semantic search capability                       | Stores embeddings and enables “find similar feedback” queries                   |
-
----
 
 ## System Flow
 
@@ -99,7 +87,7 @@ This prototype uses several Cloudflare products working together.
    * Sentiment breakdown
    * Category distribution
    * Word cloud of common terms
-   * AI generated summary of key issues
+   * AI-generated summary of key issues
 5. Users can search feedback using natural language.
 6. Vectorize returns semantically similar feedback, even if keywords do not match.
 

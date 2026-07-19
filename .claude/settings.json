@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s http://localhost:8788/api/insights)",
+      "Bash(kill %1)"
+    ]
+  }
+}

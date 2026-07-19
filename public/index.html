@@ -524,6 +524,10 @@
                 const res = await fetch('/api/insights');
                 const data = await res.json();
 
+                if (!res.ok || !data.summary) {
+                    throw new Error(data.error || 'No insights available');
+                }
+
                 document.getElementById('insights-container').innerHTML =
                     `<div class="insights-summary">${data.summary}</div>`;
 
